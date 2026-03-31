@@ -11,12 +11,28 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 3 {
-        eprintln!("Usage: {} <directory> <keyword>", args[0]);
+        eprintln!(
+            "Usage: {} <directory> <keyword>",
+            args.first().map_or("file-search", |s| s)
+        );
         std::process::exit(1);
     }
 
-    let dir = &args[1];
-    let keyword = &args[2];
+    let dir = match args.get(1) {
+        Some(d) => d,
+        None => {
+            eprintln!("错误: 目录参数缺失");
+            std::process::exit(1);
+        }
+    };
+
+    let keyword = match args.get(2) {
+        Some(k) => k,
+        None => {
+            eprintln!("错误: 关键词参数缺失");
+            std::process::exit(1);
+        }
+    };
 
     if let Err(e) = run(dir, keyword) {
         eprintln!("错误: {}", e);
@@ -45,7 +61,7 @@ fn run(dir: &str, keyword: &str) -> Result<(), SearchError> {
     let num_threads = std::thread::available_parallelism()
         .map(|n| n.get())
         .unwrap_or(4);
-    let chunk_size = (entries.len() + num_threads - 1) / num_threads;
+    let chunk_size = entries.len().div_ceil(num_threads);
 
     thread::scope(|s| {
         for chunk in entries.chunks(chunk_size) {
