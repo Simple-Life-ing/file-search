@@ -1,6 +1,6 @@
 use clap::Parser;
+use rayon::prelude::*;
 use std::path::PathBuf;
-use std::thread;
 use walkdir::WalkDir;
 
 mod error;
@@ -96,24 +96,22 @@ fn run(args: &Args) -> Result<(), SearchError> {
         eprintln!("📊 扫描文件数: {}", entries.len());
     }
 
-    let chunk_size = entries.len().div_ceil(num_threads);
+    let pool = rayon::ThreadPoolBuilder::new()
+        .num_threads(num_threads)
+        .build()?;
 
-    thread::scope(|s| {
-        for chunk in entries.chunks(chunk_size) {
-            s.spawn(move || {
-                for entry in chunk {
-                    if entry.file_type().is_file() {
-                        let path = entry.path().display().to_string();
-                        // 忽略单个文件的搜索错误，继续处理下一个文件
-                        if let Err(e) = search::search_in_file(&path, &args.keyword)
-                            && args.verbose
-                        {
-                            eprintln!("⚠️  搜索文件 {} 失败: {}", path, e);
-                        }
+    pool.install(|| {
+        entries.par_iter().for_each(|entry| {
+            if entry.file_type().is_file() {
+                let path = entry.path().display().to_string();
+                // 忽略单个文件的搜索错误，继续处理下一个文件
+                if let Err(e) = search::search_in_file(&path, &args.keyword) {
+                    if args.verbose {
+                        eprintln!("⚠️  搜索文件 {} 失败: {}", path, e);
                     }
                 }
-            });
-        }
+            }
+        });
     });
 
     if args.verbose {

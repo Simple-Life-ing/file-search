@@ -1,5 +1,5 @@
-use thiserror::Error;
 use std::io;
+use thiserror::Error;
 
 /// File search 错误类型
 #[derive(Error, Debug)]
@@ -9,6 +9,9 @@ pub enum SearchError {
 
     #[error("目录遍历错误: {0}")]
     WalkDir(#[from] walkdir::Error),
+
+    #[error("Rayon 线程池错误: {0}")]
+    RayonPool(#[from] rayon::ThreadPoolBuildError),
 
     #[error("文件读取失败: {path}")]
     FileRead { path: String },
