@@ -1,6 +1,7 @@
 use crate::error::{Result, SearchError};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use tracing::warn;
 
 /// 在指定文件中搜索关键词
 ///
@@ -13,7 +14,7 @@ use std::io::{BufRead, BufReader};
 /// * `Err(SearchError)` - 搜索过程中发生错误
 pub fn search_in_file(path: &str, keyword: &str) -> Result<()> {
     let file = File::open(path).map_err(|e| {
-        eprintln!("警告: 无法打开文件 {}: {}", path, e);
+        warn!("警告: 无法打开文件 {}: {}", path, e);
         SearchError::Io(e)
     })?;
 
