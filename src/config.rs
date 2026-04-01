@@ -73,7 +73,7 @@ pub fn load_file_config(path: &PathBuf) -> Result<FileConfig, SearchError> {
 /// include_ext = ["rs", "md"]
 /// exclude_ext = ["log"]
 /// ```
-pub fn load_configuration(args: &crate::Args) -> Result<RuntimeConfig, SearchError> {
+pub fn load_configuration(args: &crate::cli::Args) -> Result<RuntimeConfig, SearchError> {
     let mut file_config = FileConfig::default();
 
     let config_path = if let Some(cfg) = args.config.as_ref() {
