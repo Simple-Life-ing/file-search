@@ -31,6 +31,9 @@ pub enum SearchError {
     #[allow(dead_code)]
     #[error("无法转换路径编码: {0}")]
     PathEncoding(String),
+
+    #[error("正则表达式编译错误: {0}")]
+    RegexCompile(String),
 }
 
 /// Result 类型别名，默认错误类型为 SearchError
@@ -47,6 +50,14 @@ mod tests {
 
         let error_msg = format!("{}", search_err);
         assert!(error_msg.contains("IO 错误"));
+    }
+
+    /// 测试目标：验证正则编译错误能正确生成错误消息
+    #[test]
+    fn test_regex_compile_error() {
+        let regex_err = SearchError::RegexCompile("invalid pattern".to_string());
+        let error_msg = format!("{}", regex_err);
+        assert!(error_msg.contains("正则表达式编译错误"));
     }
 
     /// 测试目标：验证文件读取错误的错误消息中包含路径信息

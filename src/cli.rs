@@ -13,7 +13,7 @@ pub struct Args {
     #[arg(value_name = "DIRECTORY")]
     pub directory: Option<PathBuf>,
 
-    /// 要搜索的关键词
+    /// 要搜索的关键词或正则表达式
     #[arg(value_name = "KEYWORD")]
     pub keyword: Option<String>,
 
@@ -36,6 +36,10 @@ pub struct Args {
     /// 排除的扩展名，多个用逗号分隔（如 log,tmp）
     #[arg(long, value_delimiter = ',')]
     pub exclude_ext: Option<Vec<String>>,
+
+    /// 使用正则表达式模式搜索
+    #[arg(long)]
+    pub regex: bool,
 }
 
 impl Args {

@@ -5,7 +5,7 @@
 /// 用法：
 ///   cargo run --example error_handling
 
-use file_search::search::search_in_file;
+use file_search::search::{search_in_file, SearchPattern};
 use file_search::SearchError;
 use std::fs;
 use tempfile::TempDir;
@@ -17,7 +17,8 @@ fn main() {
     println!("📝 示例 1: 搜索不存在的文件");
     println!("尝试搜索: /nonexistent/file.txt\n");
 
-    match search_in_file("/nonexistent/file.txt", "keyword") {
+    let pattern = SearchPattern::from_pattern("keyword", false).expect("Failed to create pattern");
+    match search_in_file("/nonexistent/file.txt", &pattern) {
         Ok(()) => println!("✅ 搜索成功"),
         Err(SearchError::Io(e)) => {
             println!("❌ IO 错误: {}", e);
@@ -34,7 +35,8 @@ fn main() {
     let path_str = file_path.to_string_lossy().to_string();
 
     println!("在文件中搜索: {}\n", path_str);
-    match search_in_file(&path_str, "test") {
+    let pattern = SearchPattern::from_pattern("test", false).expect("Failed to create pattern");
+    match search_in_file(&path_str, &pattern) {
         Ok(()) => println!("✅ 搜索成功，找到匹配项\n"),
         Err(e) => println!("❌ 错误: {}\n", e),
     }
@@ -46,7 +48,8 @@ fn main() {
     let empty_path = empty_file.to_string_lossy().to_string();
 
     println!("搜索空文件: {}\n", empty_path);
-    match search_in_file(&empty_path, "anything") {
+    let pattern = SearchPattern::from_pattern("anything", false).expect("Failed to create pattern");
+    match search_in_file(&empty_path, &pattern) {
         Ok(()) => println!("✅ 搜索成功（无结果但无错误）\n"),
         Err(e) => println!("❌ 错误: {}\n", e),
     }
@@ -67,7 +70,8 @@ fn main() {
         let restricted_path = restricted_file.to_string_lossy().to_string();
         println!("尝试搜索无读权限的文件: {}\n", restricted_path);
 
-        match search_in_file(&restricted_path, "content") {
+        let pattern = SearchPattern::from_pattern("content", false).expect("Failed to create pattern");
+        match search_in_file(&restricted_path, &pattern) {
             Ok(()) => println!("✅ 搜索成功"),
             Err(SearchError::Io(e)) => {
                 println!("❌ IO 错误（权限被拒）: {}", e);
@@ -90,9 +94,10 @@ fn main() {
     fs::write(&test_file, "repeated content\nrepeated content\nrepeated content").expect("Failed");
     let test_path = test_file.to_string_lossy().to_string();
 
+    let pattern = SearchPattern::from_pattern("repeated", false).expect("Failed to create pattern");
     for i in 1..=3 {
         println!("第 {} 次搜索:", i);
-        match search_in_file(&test_path, "repeated") {
+        match search_in_file(&test_path, &pattern) {
             Ok(()) => println!("  ✅ 搜索成功\n"),
             Err(e) => println!("  ❌ 错误: {}\n", e),
         }

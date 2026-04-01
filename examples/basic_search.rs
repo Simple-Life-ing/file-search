@@ -4,7 +4,7 @@
 ///
 /// 用法：
 ///   cargo run --example basic_search
-use file_search::search::search_in_file;
+use file_search::search::{search_in_file, SearchPattern};
 use std::fs;
 use tempfile::TempDir;
 
@@ -34,9 +34,14 @@ Rust 拥有强大的包管理器 Cargo
 
     for keyword in keywords {
         println!("🔍 搜索关键词: \"{}\"", keyword);
-        match search_in_file(&file_path_str, keyword) {
-            Ok(()) => println!("✅ 搜索完成\n"),
-            Err(e) => println!("❌ 错误: {}\n", e),
+        match SearchPattern::from_pattern(keyword, false) {
+            Ok(pattern) => {
+                match search_in_file(&file_path_str, &pattern) {
+                    Ok(()) => println!("✅ 搜索完成\n"),
+                    Err(e) => println!("❌ 错误: {}\n", e),
+                }
+            }
+            Err(e) => println!("❌ 模式错误: {}\n", e),
         }
     }
 

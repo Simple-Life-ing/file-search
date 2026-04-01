@@ -4,7 +4,7 @@
 /// - 创建临时文件目录结构
 /// - 跨多个文件的搜索
 /// - 错误处理和边界情况
-use file_search::search::search_in_file;
+use file_search::search::{SearchPattern, search_in_file};
 use std::fs;
 use tempfile::TempDir;
 
@@ -46,8 +46,9 @@ fn setup_test_directory() -> (TempDir, Vec<String>) {
 #[test]
 fn integration_test_search_single_file() {
     let (_dir, file_paths) = setup_test_directory();
+    let pattern = SearchPattern::from_pattern("hello", false).expect("Failed to create pattern");
 
-    let result = search_in_file(&file_paths[0], "hello");
+    let result = search_in_file(&file_paths[0], &pattern);
     assert!(
         result.is_ok(),
         "Should successfully search file1.txt for 'hello'"
@@ -58,10 +59,11 @@ fn integration_test_search_single_file() {
 #[test]
 fn integration_test_search_multiple_files() {
     let (_dir, file_paths) = setup_test_directory();
+    let pattern = SearchPattern::from_pattern("hello", false).expect("Failed to create pattern");
 
     // 搜索所有文件中的 "hello"
     for path in &file_paths {
-        let result = search_in_file(path, "hello");
+        let result = search_in_file(path, &pattern);
         assert!(result.is_ok(), "Should handle all files without error");
     }
 }
@@ -72,9 +74,10 @@ fn integration_test_search_with_permission_error() {
     let dir = TempDir::new().expect("Failed to create temp dir");
     let file_path = dir.path().join("test.txt");
     fs::write(&file_path, "content").expect("Failed to write file");
+    let pattern = SearchPattern::from_pattern("content", false).expect("Failed to create pattern");
 
     // 直接测试可读文件
-    let result = search_in_file(&file_path.to_string_lossy().to_string(), "content");
+    let result = search_in_file(&file_path.to_string_lossy().to_string(), &pattern);
     assert!(result.is_ok());
 
     // 在 Unix 系统上改变权限（Windows 跳过此测试）
@@ -84,7 +87,7 @@ fn integration_test_search_with_permission_error() {
         let perms = fs::Permissions::from_mode(0o000);
         fs::set_permissions(&file_path, perms).expect("Failed to change permissions");
 
-        let result = search_in_file(&file_path.to_string_lossy().to_string(), "content");
+        let result = search_in_file(&file_path.to_string_lossy().to_string(), &pattern);
 
         // 恢复权限以便清理
         let perms = fs::Permissions::from_mode(0o644);
@@ -105,11 +108,13 @@ fn integration_test_search_with_special_content() {
     fs::write(&file_path, content).expect("Failed to write file");
 
     // 搜索中文
-    let result = search_in_file(&file_path.to_string_lossy().to_string(), "中文");
+    let pattern = SearchPattern::from_pattern("中文", false).expect("Failed to create pattern");
+    let result = search_in_file(&file_path.to_string_lossy().to_string(), &pattern);
     assert!(result.is_ok());
 
     // 搜索特殊字符
-    let result = search_in_file(&file_path.to_string_lossy().to_string(), "@special");
+    let pattern = SearchPattern::from_pattern("@special", false).expect("Failed to create pattern");
+    let result = search_in_file(&file_path.to_string_lossy().to_string(), &pattern);
     assert!(result.is_ok());
 }
 
@@ -129,7 +134,9 @@ fn integration_test_search_large_file() {
     fs::write(&file_path, content).expect("Failed to write large file");
 
     // 搜索标记行
-    let result = search_in_file(&file_path.to_string_lossy().to_string(), "MARKER_LINE");
+    let pattern =
+        SearchPattern::from_pattern("MARKER_LINE", false).expect("Failed to create pattern");
+    let result = search_in_file(&file_path.to_string_lossy().to_string(), &pattern);
     assert!(result.is_ok(), "Should handle large file search");
 }
 
@@ -137,13 +144,14 @@ fn integration_test_search_large_file() {
 #[test]
 fn integration_test_search_empty_directory_files() {
     let dir = TempDir::new().expect("Failed to create temp dir");
+    let pattern = SearchPattern::from_pattern("anything", false).expect("Failed to create pattern");
 
     // 创建多个空文件
     for i in 0..5 {
         let file_path = dir.path().join(format!("empty{}.txt", i));
         fs::write(&file_path, "").expect("Failed to create empty file");
 
-        let result = search_in_file(&file_path.to_string_lossy().to_string(), "anything");
+        let result = search_in_file(&file_path.to_string_lossy().to_string(), &pattern);
         assert!(result.is_ok(), "Should handle empty files");
     }
 }
@@ -155,6 +163,7 @@ fn integration_test_parallel_search_scenario() {
 
     // 创建 10 个文件，每个包含不同数量的目标关键词
     let keyword = "target";
+    let pattern = SearchPattern::from_pattern(keyword, false).expect("Failed to create pattern");
     let mut files = Vec::new();
 
     for file_num in 0..10 {
@@ -176,7 +185,7 @@ fn integration_test_parallel_search_scenario() {
 
     // 搜索所有文件
     for file_path in files {
-        let result = search_in_file(&file_path, keyword);
+        let result = search_in_file(&file_path, &pattern);
         assert!(
             result.is_ok(),
             "Parallel scenario: all files should be searchable"
@@ -214,7 +223,9 @@ English: Hello World
     ];
 
     for keyword in searches {
-        let result = search_in_file(&file_path.to_string_lossy().to_string(), keyword);
+        let pattern =
+            SearchPattern::from_pattern(keyword, false).expect("Failed to create pattern");
+        let result = search_in_file(&file_path.to_string_lossy().to_string(), &pattern);
         assert!(result.is_ok(), "Should find keyword: {}", keyword);
     }
 }
@@ -230,7 +241,8 @@ fn integration_test_unicode_filename() {
     let content = "Content in file with unicode name";
     fs::write(&file_path, content).expect("Failed to write unicode named file");
 
-    let result = search_in_file(&file_path.to_string_lossy().to_string(), "unicode");
+    let pattern = SearchPattern::from_pattern("unicode", false).expect("Failed to create pattern");
+    let result = search_in_file(&file_path.to_string_lossy().to_string(), &pattern);
     assert!(result.is_ok(), "Should handle unicode filenames");
 }
 
@@ -244,7 +256,8 @@ fn integration_test_line_number_accuracy() {
     fs::write(&file_path, content).expect("Failed to write file");
 
     // 搜索应该在第 2 和 4 行找到 "target"
-    let result = search_in_file(&file_path.to_string_lossy().to_string(), "target");
+    let pattern = SearchPattern::from_pattern("target", false).expect("Failed to create pattern");
+    let result = search_in_file(&file_path.to_string_lossy().to_string(), &pattern);
     assert!(result.is_ok(), "Should correctly identify target lines");
 }
 
@@ -255,10 +268,11 @@ fn integration_test_repeated_search_same_file() {
     let file_path = dir.path().join("repeated.txt");
     let content = "keyword appears here\nSome other text\nkeyword appears again";
     fs::write(&file_path, content).expect("Failed to write file");
+    let pattern = SearchPattern::from_pattern("keyword", false).expect("Failed to create pattern");
 
     // 多次搜索同一个文件
     for _ in 0..5 {
-        let result = search_in_file(&file_path.to_string_lossy().to_string(), "keyword");
+        let result = search_in_file(&file_path.to_string_lossy().to_string(), &pattern);
         assert!(result.is_ok(), "Repeated search should always succeed");
     }
 }

@@ -5,7 +5,7 @@
 /// 用法：
 ///   cargo run --example batch_search
 
-use file_search::search::search_in_file;
+use file_search::search::{search_in_file, SearchPattern};
 use std::fs;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
@@ -50,13 +50,16 @@ fn main() {
     let keyword = "Rust";
     println!("\n🔍 在所有文件中搜索关键词: \"{}\"\n", keyword);
 
+    // 构建搜索模式
+    let pattern = SearchPattern::from_pattern(keyword, false).expect("Failed to create pattern");
+
     // 计数搜索结果
     let match_count = Arc::new(AtomicUsize::new(0));
     let mut found_files = Vec::new();
 
     for (path, name) in &file_paths {
         println!("📄 搜索文件: {}", name);
-        match search_in_file(path, keyword) {
+        match search_in_file(path, &pattern) {
             Ok(()) => {
                 found_files.push(name.clone());
                 match_count.fetch_add(1, Ordering::Relaxed);

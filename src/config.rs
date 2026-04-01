@@ -11,6 +11,7 @@ pub struct FileConfig {
     pub log_level: Option<String>,
     pub include_ext: Option<Vec<String>>,
     pub exclude_ext: Option<Vec<String>>,
+    pub regex: Option<bool>,
 }
 
 #[derive(Debug)]
@@ -21,6 +22,7 @@ pub struct RuntimeConfig {
     pub verbose: bool,
     pub include_ext: Vec<String>,
     pub exclude_ext: Vec<String>,
+    pub use_regex: bool,
 }
 
 /// 获取默认配置文件路径，来自 HOME 环境变量
@@ -78,8 +80,17 @@ pub fn load_file_config(path: &PathBuf) -> Result<FileConfig, SearchError> {
 /// keyword = "todo"
 /// threads = 4
 /// verbose = true
+/// regex = false
 /// include_ext = ["rs", "md"]
 /// exclude_ext = ["log"]
+/// ```
+///
+/// 使用正则表达式：
+///
+/// ```toml
+/// directory = "/path/to/search"
+/// keyword = r"\d{3}-\d{4}"
+/// regex = true
 /// ```
 pub fn load_configuration(args: &crate::cli::Args) -> Result<RuntimeConfig, SearchError> {
     let mut file_config = FileConfig::default();
@@ -120,6 +131,8 @@ pub fn load_configuration(args: &crate::cli::Args) -> Result<RuntimeConfig, Sear
 
     let verbose = args.verbose || file_config.verbose.unwrap_or(false);
 
+    let use_regex = args.regex || file_config.regex.unwrap_or(false);
+
     let include_ext = args
         .include_ext
         .clone()
@@ -145,6 +158,7 @@ pub fn load_configuration(args: &crate::cli::Args) -> Result<RuntimeConfig, Sear
         verbose,
         include_ext,
         exclude_ext,
+        use_regex,
     })
 }
 
@@ -153,4 +167,5 @@ pub fn load_configuration(args: &crate::cli::Args) -> Result<RuntimeConfig, Sear
 // With config only: cargo run -- --config ~/.config/file-search/config.toml
 // CLI override: cargo run -- --config ~/.config/file-search/config.toml . search
 // Custom config: cargo run -- --config /path/to/custom.toml . keyword
+// Regex search: cargo run -- . "error|warn" --regex
 //

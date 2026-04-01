@@ -1,7 +1,8 @@
 use crate::config::RuntimeConfig;
 use crate::error::SearchError;
-use crate::search;
+use crate::search::{self, SearchPattern};
 use rayon::prelude::*;
+use std::sync::Arc;
 use tracing::{info, warn};
 use walkdir::WalkDir;
 
@@ -32,9 +33,14 @@ pub fn run(config: &RuntimeConfig) -> Result<(), SearchError> {
         .to_str()
         .ok_or_else(|| SearchError::PathEncoding("无法转换路径编码".to_string()))?;
 
+    // 构建搜索模式（在这里进行正则编译，失败时直接返回错误）
+    let pattern = SearchPattern::from_pattern(&config.keyword, config.use_regex)?;
+    let pattern = Arc::new(pattern);
+
     if config.verbose {
         info!("📁 搜索目录: {}", config.directory.display());
         info!("🔍 搜索关键词: {}", config.keyword);
+        info!("🔎 搜索模式: {}", pattern.pattern_type());
 
         if !config.include_ext.is_empty() {
             info!("📥 包含扩展: {}", config.include_ext.join(", "));
@@ -88,7 +94,7 @@ pub fn run(config: &RuntimeConfig) -> Result<(), SearchError> {
                 }
 
                 let path = path_obj.display().to_string();
-                if let Err(e) = search::search_in_file(&path, &config.keyword) {
+                if let Err(e) = search::search_in_file(&path, &pattern) {
                     if config.verbose {
                         warn!("⚠️  搜索文件 {} 失败: {}", path, e);
                     }
