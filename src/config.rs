@@ -42,8 +42,10 @@ pub fn default_config_path() -> Option<PathBuf> {
 ///
 /// Usage:
 ///
-/// ```
-/// let cfg = file_search::config::load_file_config(&path)?;
+/// ```no_run
+/// use std::path::PathBuf;
+/// let path = PathBuf::from("/path/to/config.toml");
+/// let cfg = file_search::config::load_file_config(&path).unwrap();
 /// ```
 pub fn load_file_config(path: &PathBuf) -> Result<FileConfig, SearchError> {
     let content = std::fs::read_to_string(path).map_err(SearchError::Io)?;
@@ -54,13 +56,19 @@ pub fn load_file_config(path: &PathBuf) -> Result<FileConfig, SearchError> {
 ///
 /// Usage:
 ///
+/// ```no_run
+/// use file_search::{Args, execute_search};
+/// 
+/// let args = Args::parse_args();
+/// let runtime = file_search::config::load_configuration(&args).unwrap();
+/// execute_search(&runtime).unwrap();
 /// ```
-/// // CLI 解析 + config 文件优先级处理
-/// let args = file_search::Args::parse();
-/// let runtime = file_search::config::load_configuration(&args)?;
 ///
-/// // 直接运行搜索
-/// file_search::executor::run(&runtime)?;
+/// 只使用配置文件：
+///
+/// ```no_run
+/// // 直接通过命令行：
+/// // cargo run -- --config ~/.config/file-search/config.toml
 /// ```
 ///
 /// 配置示例(`~/.config/file-search/config.toml`):

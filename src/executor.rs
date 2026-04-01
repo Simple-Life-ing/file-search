@@ -9,9 +9,13 @@ use walkdir::WalkDir;
 ///
 /// Usage:
 ///
-/// ```
-/// let runtime_config = file_search::config::load_configuration(&args)?;
-/// file_search::executor::run(&runtime_config)?;
+/// ```no_run
+/// use std::path::PathBuf;
+/// use file_search::{Args, execute_search};
+///
+/// let args = Args::parse_args();
+/// let runtime_config = file_search::config::load_configuration(&args).unwrap();
+/// execute_search(&runtime_config).unwrap();
 /// ```
 pub fn run(config: &RuntimeConfig) -> Result<(), SearchError> {
     // 验证目录是否存在
@@ -105,6 +109,7 @@ pub fn run(config: &RuntimeConfig) -> Result<(), SearchError> {
 /// Usage:
 ///
 /// ```
+/// use std::path::Path;
 /// assert!(file_search::executor::file_extension_allowed(Path::new("foo.rs"), &[], &[]));
 /// ```
 pub fn file_extension_allowed(
