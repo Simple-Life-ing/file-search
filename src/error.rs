@@ -21,6 +21,12 @@ pub enum SearchError {
     #[error("无效的路径: {0}")]
     InvalidPath(String),
 
+    #[error("缺少必需参数: {0}")]
+    MissingParameter(String),
+
+    #[error("配置文件解析错误: {0}")]
+    ConfigParse(String),
+
     /// 为未来功能预留
     #[allow(dead_code)]
     #[error("无法转换路径编码: {0}")]
