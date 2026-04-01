@@ -16,3 +16,20 @@ regex = "1.10"
 
 [dev-dependencies]
 tempfile = "3.8"
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "pattern_matching"
+harness = false
+
+[[bench]]
+name = "file_processing"
+harness = false
+
+[[bench]]
+name = "directory_traversal"
+harness = false
+
+[[bench]]
+name = "end_to_end"
+harness = false

@@ -1,0 +1,42 @@
+English: Hello World - System error occurred
+中文: 你好世界 - 错误代码404
+日本語: こんにちは世界 - エラーが発生しました  
+한국어: 안녕하세요 세계 - 오류 발생
+Русский: Привет мир - произошла ошибка
+Ελληνικά: Γεια σας κόσμος - προέκυψε σφάλμα
+Français: Bonjour le monde - une erreur s'est produite
+Español: Hola mundo - error detectado
+Português: Olá mundo - erro ocorreu
+Deutsch: Hallo Welt - Fehler aufgetreten
+Italiano: Ciao mondo - errore rilevato
+Türkçe: Merhaba dünya - hata oluştu
+العربية: مرحبا بالعالم - حدث خطأ
+עברית: שלום עולם - אירעה שגיאה
+ภาษาไทย: สวัสดีชาวโลก - เกิดข้อผิดพลาด
+Tiếng Việt: Xin chào thế giới - lỗi xảy ra
+한글: 세상안녕 - 에러 생김
+अरबी: اررو: warning message detected
+हिन्दी: नमस्ते दुनिया - त्रुटि हुई
+Indonesian: Halo dunia - kesalahan terjadi
+Malaysian: Halo dunia - ralat berlaku
+Tagalog: Halo mundo - nagsikabung na error
+Thai: สวัสดีชาวโลก - เกิดข้อผิดพลาด
+Polish: Cześć świecie - błąd wystąpił
+Swedish: Hej världen - ett fel uppstod
+Norwegian: Hallo verden - feil oppstod
+Danish: Hej verden - fejl opstod
+Finnish: Hei maailma - virhe ilmeni
+Czech: Ahoj světe - došlo k chybě
+Hungarian: Halló világ - hiba történt
+Romanian: Bună lume - a apărut o eroare
+Bulgarian: Привет свят - възникна грешка
+Croatian: Bok svijete - dogodila se greška
+Serbian: Здраво свете - дошло је до грешке
+Slovenian: Tukaj svet - prišlo je do napake
+Slovak: Ahoj svet - vyskytla sa chyba
+Icelandic: Halló heimur - villa kom upp
+Your search term: error|warning|info appears in this benchmark file
+Multiple instances: error 404 and error 500 and error timeout
+Pattern test data for regex: error|warning 
+Additional error in processing system
+System warning: critical failure warning detected

@@ -1,0 +1,54 @@
+HTTP/200 Request completed successfully
+HTTP/404 Resource not found error
+INFO: Processing request from 192.168.1.1
+ERROR: Failed to connect to database at 10.0.0.5
+WARNING: High CPU usage detected at 85%
+ERROR: Timeout after 30000ms waiting for response
+INFO: User logged in from 172.16.0.100
+WARNING: Memory usage exceeded 1024MB threshold
+ERROR: Connection refused from 203.0.113.42
+INFO: Task completed in 2500ms with status OK
+ERROR: Authentication failed for user admin@example.com
+WARNING: SSL certificate expires in 30 days
+INFO: Processed 5000 requests successfully
+ERROR: Could not find resource at /api/v1/users/404
+WARNING: Slow query detected: SELECT * took 5000ms
+ERROR: Network timeout connecting to 8.8.8.8:53
+INFO: Backup completed: 250GB transferred in 3600s
+ERROR: Out of memory: failed to allocate 2147483648 bytes
+WARNING: Disk usage at 95% on /dev/sda1
+INFO: Service degraded mode: 50% capacity
+ERROR: Failed to parse JSON: unexpected token at position 127
+WARNING: Rate limit approaching: 4950 requests of 5000
+ERROR: Database locked: transaction timeout after 60s
+INFO: Cluster node heartbeat from 10.0.0.1 received
+ERROR: Permission denied: user cannot access /admin/panel
+WARNING: Temperature sensor critical at 95 degrees C
+ERROR: Invalid certificate: CN=expired.example.com expires=2020-01-01
+INFO: Load balanced across 8 servers
+ERROR: File system error: cannot write to /var/log/app.log
+WARNING: Packet loss detected: 15% on route to 203.0.113.0/24
+ERROR: DNS resolution failed for api.example.com
+INFO: Circuit breaker engaged: service unavailable
+ERROR: Thread panic: attempt to divide by zero
+WARNING: Connection lost: reconnecting to 192.168.0.1 in 5s
+ERROR: Checksum mismatch: expected 0xDEADBEEF got 0xCAFEBABE
+INFO: Migration complete: upgraded from v1.0 to v2.0
+ERROR: CORS policy blocked request from https://untrusted.com
+WARNING: GC pause detected: 245ms full collection
+ERROR: Assertion failed: x > 0 in /src/math.rs:42
+INFO: Feature flag enabled: new_dashboard=true for user_id=12345
+ERROR: Stack overflow in recursive function at depth 65536
+WARNING: Deprecation warning: use new_api() instead of old_api()
+ERROR: Illegal memory access: attempt to write to read-only page
+INFO: Metrics recorded: latency_p99=125ms, throughput=10K req/s
+ERROR: Deadlock detected: process waiting for mutex held by self
+WARNING: Buffer overrun: wrote 128 bytes to 64 byte buffer at 0x12345678
+ERROR: Trap signal 11: segmentation fault in libc.so.6
+INFO: Security audit passed: no vulnerabilities found
+ERROR: Fatal signal 9: Kill signal received from OS
+WARNING: Memory pressure high: OOM killer may be invoked
+ERROR: SIGSEGV in malloc at backtrace: [main, foo, bar, strlen]
+INFO: Deployment successful: 100% traffic shifted to canary
+ERROR: SIGABRT: abort() called at line 99 in /usr/src/app.c
+WARNING: Watchdog timeout: process hung for 300s

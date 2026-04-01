@@ -1,0 +1,100 @@
+line 0: This is a sample line with some content
+line 1: Another line for testing purposes
+line 2: error occurred in the system
+line 3: warning message from processor
+line 4: info: system started successfully
+line 5: error code 404 not found
+line 6: warning: low disk space detected
+line 7: debug info for developers
+line 8: error in file processing
+line 9: line with normal text
+line 10: another error encountered
+line 11: processing completed
+line 12: error: connection timeout
+line 13: warning: deprecated API usage
+line 14: info log message
+line 15: error database connection failed
+line 16: system running smoothly
+line 17: warning low memory
+line 18: error in authentication
+line 19: info: backup completed
+line 20: error socket error occurred
+line 21: processing task
+line 22: warning filesystem check
+line 23: error invalid configuration
+line 24: info initialization complete
+line 25: error parsing failed
+line 26: warning security risk detected
+line 27: error network unreachable
+line 28: info ready to serve requests
+line 29: error permission denied
+line 30: warning: increased CPU usage
+line 31: error file not found
+line 32: info service ready
+line 33: error resource exhausted
+line 34: warning: slow response time
+line 35: error invalid request
+line 36: info maintenance window
+line 37: error unknown host
+line 38: warning: deprecated feature
+line 39: error malformed input
+line 40: info backup successful
+line 41: error transaction aborted
+line 42: warning disk full warning
+line 43: error connection refused
+line 44: info process completed
+line 45: error endpoint not found
+line 46: warning service degradation
+line 47: error payload too large
+line 48: info metrics collected
+line 49: error timeout reached
+line 50: warning cascade failure
+line 51: error authentication failed
+line 52: info health check passed
+line 53: error rate limit exceeded
+line 54: warning threshold exceeded
+line 55: error state inconsistent
+line 56: info synchronization done
+line 57: error validation error
+line 58: warning buffer overflow
+line 59: error configuration invalid
+line 60: info restart successful
+line 61: error mutex deadlock
+line 62: warning race condition
+line 63: error null pointer
+line 64: info all tests passed
+line 65: error index out of bounds
+line 66: warning memory leak
+line 67: error infinite loop
+line 68: info optimization complete
+line 69: error stack overflow
+line 70: warning type mismatch
+line 71: error assertion failed
+line 72: info deployment successful
+line 73: error assertion assertion failed
+line 74: warning undefined behavior
+line 75: error segmentation fault
+line 76: info production ready
+line 77: error integer overflow
+line 78: warning floating point error
+line 79: error double free
+line 80: info release v1.0.0
+line 81: error use after free
+line 82: warning buffer boundary
+line 83: error arithmetic error
+line 84: info stable version
+line 85: error logic error
+line 86: warning precision loss
+line 87: error data corruption
+line 88: info final release
+line 89: error critical failure
+line 90: warning system instability
+line 91: error fatal error
+line 92: info mission accomplished
+line 93: error unknown error
+line 94: warning unknown cause
+line 95: error undefined reference
+line 96: info end of file
+line 97: error import failed
+line 98: warning export incomplete
+line 99: error module not found
