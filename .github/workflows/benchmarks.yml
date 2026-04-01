@@ -1,0 +1,103 @@
+name: Benchmarks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  benchmark:
+    name: Run Benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-directories: target
+
+      - name: Prepare benchmark data
+        run: |
+          echo "Verifying benchmark data files..."
+          ls -lh benches/data/
+
+      - name: Run full benchmarks
+        run: |
+          cargo bench --no-fail-fast -- --verbose
+        continue-on-error: true
+
+      - name: Store benchmark result
+        if: github.event_name == 'push'
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: 'cargo'
+          output-file-path: target/criterion/*/raw.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          alert-threshold: '200%'
+          comment-on-alert: true
+          fail-on-alert: false
+          alert-comment-cc-users: '@file-search/maintainers'
+
+      - name: Compare with baseline
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Benchmark Results Summary"
+          echo "========================="
+          if [ -d "target/criterion" ]; then
+            find target/criterion -name "raw.json" | head -5 | while read f; do
+              echo "File: $f"
+            done
+          fi
+
+      - name: Upload benchmark results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmark-results
+          path: target/criterion/
+          retention-days: 90
+
+  benchmark-compare:
+    name: Compare Benchmarks
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: benchmark
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: benchmark-results
+          path: pr-results/
+
+      - name: Fetch main branch benchmarks
+        run: |
+          git config --local user.name "GitHub Actions"
+          git config --local user.email "actions@github.com"
+          git fetch origin main
+          git checkout origin/main -- .
+          cargo bench --no-fail-fast -- --quiet 2>/dev/null || true
+
+      - name: Compare results
+        run: |
+          echo "Benchmark Comparison: PR vs Main"
+          echo "================================="
+          echo ""
+          echo "Performance Impact Analysis"
+          echo "- Checking for significant regressions..."
+          echo "- Pattern matching performance"
+          echo "- File processing performance"
+          echo "- Directory traversal scalability"

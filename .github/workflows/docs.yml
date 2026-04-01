@@ -1,0 +1,215 @@
+name: Generate and Publish Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'benches/**'
+      - 'README.md'
+      - 'PERFORMANCE.md'
+      - 'BENCHMARKS.md'
+      - 'Cargo.toml'
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  build-docs:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build Rust API documentation
+        run: cargo doc --no-deps --all-features
+        env:
+          RUSTDOCFLAGS: -D warnings
+
+      - name: Create docs root
+        run: |
+          mkdir -p target/docs_site
+          
+          # Copy API docs
+          cp -r target/doc/* target/docs_site/ 2>/dev/null || true
+          
+          # Copy markdown docs
+          cp README.md target/docs_site/README.md 2>/dev/null || true
+          cp PERFORMANCE.md target/docs_site/PERFORMANCE.md 2>/dev/null || true
+          cp BENCHMARKS.md target/docs_site/BENCHMARKS.md 2>/dev/null || true
+
+      - name: Create index HTML
+        run: |
+          cat > target/docs_site/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <meta charset="utf-8">
+              <title>file-search Documentation</title>
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <style>
+                  body {
+                      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                      line-height: 1.6;
+                      max-width: 900px;
+                      margin: 0 auto;
+                      padding: 20px;
+                      background: #f5f5f5;
+                  }
+                  .header {
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                      color: white;
+                      padding: 40px;
+                      border-radius: 8px;
+                      margin-bottom: 30px;
+                  }
+                  h1 { margin: 0; }
+                  .subtitle { opacity: 0.9; margin-top: 10px; }
+                  .docs-grid {
+                      display: grid;
+                      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                      gap: 20px;
+                      margin-bottom: 30px;
+                  }
+                  .doc-card {
+                      background: white;
+                      padding: 20px;
+                      border-radius: 8px;
+                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                      transition: all 0.3s;
+                  }
+                  .doc-card:hover {
+                      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                      transform: translateY(-2px);
+                  }
+                  .doc-card h3 {
+                      margin-top: 0;
+                      color: #667eea;
+                  }
+                  .doc-card p {
+                      margin: 10px 0;
+                      font-size: 14px;
+                      color: #666;
+                  }
+                  .doc-card a {
+                      display: inline-block;
+                      margin-top: 10px;
+                      padding: 8px 16px;
+                      background: #667eea;
+                      color: white;
+                      text-decoration: none;
+                      border-radius: 4px;
+                      font-size: 14px;
+                  }
+                  .doc-card a:hover {
+                      background: #764ba2;
+                  }
+                  .footer {
+                      text-align: center;
+                      color: #666;
+                      font-size: 12px;
+                      margin-top: 40px;
+                      padding-top: 20px;
+                      border-top: 1px solid #ddd;
+                  }
+              </style>
+          </head>
+          <body>
+              <div class="header">
+                  <h1>📚 file-search Documentation</h1>
+                  <p class="subtitle">Fast cross-platform file search utility with regex support</p>
+              </div>
+
+              <div class="docs-grid">
+                  <div class="doc-card">
+                      <h3>📖 API Documentation</h3>
+                      <p>Complete Rust API reference for the file-search library.</p>
+                      <a href="file_search/index.html">View API Docs →</a>
+                  </div>
+
+                  <div class="doc-card">
+                      <h3>🚀 Getting Started</h3>
+                      <p>Installation, basic usage, and quick examples to get you started.</p>
+                      <a href="README.html">View README →</a>
+                  </div>
+
+                  <div class="doc-card">
+                      <h3>⚡ Performance Guide</h3>
+                      <p>Performance metrics, benchmarks, and optimization guidelines.</p>
+                      <a href="PERFORMANCE.html">View Performance →</a>
+                  </div>
+
+                  <div class="doc-card">
+                      <h3>🔍 Benchmark Tests</h3>
+                      <p>Detailed benchmark results and how to run your own tests.</p>
+                      <a href="BENCHMARKS.html">View Benchmarks →</a>
+                  </div>
+
+                  <div class="doc-card">
+                      <h3>🔗 External Links</h3>
+                      <p>Links to GitHub, crates.io, and other resources.</p>
+                      <ul>
+                          <li><a href="https://github.com/file-search/file-search" target="_blank">GitHub Repository</a></li>
+                          <li><a href="https://crates.io/crates/file-search" target="_blank">crates.io Package</a></li>
+                          <li><a href="https://docs.rs/file-search" target="_blank">docs.rs</a></li>
+                      </ul>
+                  </div>
+              </div>
+
+              <div class="footer">
+                  <p>Documentation auto-generated on every push to main branch</p>
+              </div>
+          </body>
+          </html>
+          EOF
+
+      - name: Convert markdown to HTML
+        run: |
+          # Install pandoc if needed for better markdown conversion
+          if command -v pandoc &> /dev/null; then
+            pandoc README.md -o target/docs_site/README.html
+            pandoc PERFORMANCE.md -o target/docs_site/PERFORMANCE.html
+            pandoc BENCHMARKS.md -o target/docs_site/BENCHMARKS.html
+          fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: 'target/docs_site'
+
+  deploy-docs:
+    name: Deploy to GitHub Pages
+    needs: build-docs
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
+
+      - name: Create deployment summary
+        run: |
+          echo "## 📚 Documentation Deployed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Documentation has been built and published to GitHub Pages:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- 📖 [API Documentation](https://file-search.github.io/file-search/)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🚀 [Getting Started](https://file-search.github.io/file-search/README.html)" >> $GITHUB_STEP_SUMMARY
+          echo "- ⚡ [Performance Guide](https://file-search.github.io/file-search/PERFORMANCE.html)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔍 [Benchmarks](https://file-search.github.io/file-search/BENCHMARKS.html)" >> $GITHUB_STEP_SUMMARY

@@ -1,3 +1,26 @@
-/target
+# Build artifacts
+/target/
 /BENCHMARKS.md
 /PERFORMANCE.md
+Cargo.lock
+
+# Generated docs and reports (keep CI/CD config!)
+# Note: .github/workflows/*.yml is tracked and should NOT be ignored
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+
+# Test and coverage
+*.profraw
+*.profdata
+/coverage/
+
+# Temporary files
+*.tmp
+*.bak
